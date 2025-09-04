@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Calling Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .call-button {
+            background: linear-gradient(45deg, #10ac84, #1dd1a1);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .call-button:hover {
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-send-reception { background: #e3f2fd; color: #1976d2; }
+        .status-no-need { background: #ffebee; color: #d32f2f; }
+        .status-lost { background: #fce4ec; color: #c2185b; }
+        .status-follow-up { background: #fff3e0; color: #f57c00; }
+        .status-interested { background: #e8f5e8; color: #388e3c; }
+        .status-call-back { background: #f3e5f5; color: #7b1fa2; }
+        .status-not-connect { background: #efebe9; color: #5d4037; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                margin-bottom: 5px;
+            }
+            
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 8px 4px;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-section {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success { background: #10ac84; }
+        .notification.error { background: #ff6b6b; }
+        .notification.info { background: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 CRM Calling Portal</h1>
+            <p>Manage your calling process efficiently</p>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 id="totalCalls">0</h3>
+                    <p>Total Calls Today</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="followUps">0</h3>
+                    <p>Follow-ups Due</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="interested">0</h3>
+                    <p>Interested Cases</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="missedCalls">0</h3>
+                    <p>Missed Calls</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('daily-calling')">📞 Daily Calling</button>
+            <button class="tab-button" onclick="showTab('inbound-calls')">📲 Inbound/Missed</button>
+            <button class="tab-button" onclick="showTab('follow-ups')">⏰ Follow-ups</button>
+            <button class="tab-button" onclick="showTab('transfers')">🚀 Transfer to Senior</button>
+            <button class="tab-button" onclick="showTab('reports')">📊 Reports</button>
+        </div>
+
+        <!-- Daily Calling Tab -->
+        <div id="daily-calling" class="tab-content active">
+            <h2>📞 Daily Calling Data</h2>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showModal('addCallModal')">➕ Add New Call</button>
+                <button class="btn btn-success" onclick="importData()">📥 Import Data</button>
+                <button class="btn btn-warning" onclick="exportData()">📤 Export Data</button>
+            </div>
+
+            <input type="text" class="search-box" id="searchCalls" placeholder="🔍 Search by name, phone, or district..." onkeyup="searchCalls()">
+
+            <div class="filter-section">
+                <label>Filter by Status: </label>
+                <select id="statusFilter" onchange="filterCalls()">
+                    <option value="">All Statuses</option>
+                    <option value="Send To Reception">Send To Reception</option>
+                    <option value="No Need">No Need</option>
+                    <option value="Lost">Lost</option>
+                    <option value="Follow Up Required">Follow Up Required</option>
+                    <option value="Interested Transfer To Senior">Interested Transfer To Senior</option>
+                    <option value="Need To Support">Need To Support</option>
+                    <option value="Jarurat Hone Par Call Karenge">Jarurat Hone Par Call Karenge</option>
+                    <option value="Call Did Not Connect">Call Did Not Connect</option>
+                    <option value="Not Working Area">Not Working Area</option>
+                </select>
+            </div>
+
+            <table class="data-table" id="callsTable">
+                <thead>
+                    <tr>
+                        <th>Party Name</th>
+                        <th>District</th>
+                        <th>Block</th>
+                        <th>Designation</th>
+                        <th>Contact No</th>
+                        <th>Status</th>
+                        <th>Last Called</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="callsTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Inbound/Missed Calls Tab -->
+        <div id="inbound-calls" class="tab-content">
+            <h2>📲 Inbound & Missed Calls</h2>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showModal('addInboundModal')">➕ Add Missed Call</button>
+                <button class="btn btn-success" onclick="refreshMissedCalls()">🔄 Refresh</button>
+            </div>
+
+            <table class="data-table" id="inboundTable">
+                <thead>
+                    <tr>
+                        <th>Contact No</th>
+                        <th>Call Type</th>
+                        <th>Party Name</th>
+                        <th>District</th>
+                        <th>Status</th>
+                        <th>Call Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inboundTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Follow-ups Tab -->
+        <div id="follow-ups" class="tab-content">
+            <h2>⏰ Follow-up Calls</h2>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="loadTodayFollowUps()">📅 Today's Follow-ups</button>
+                <button class="btn btn-warning" onclick="loadOverdueFollowUps()">⚠️ Overdue Follow-ups</button>
+                <button class="btn btn-success" onclick="loadAllFollowUps()">📋 All Follow-ups</button>
+            </div>
+
+            <table class="data-table" id="followUpTable">
+                <thead>
+                    <tr>
+                        <th>Party Name</th>
+                        <th>Contact No</th>
+                        <th>District</th>
+                        <th>Follow-up Date</th>
+                        <th>Previous Remark</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="followUpTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Transfer to Senior Tab -->
+        <div id="transfers" class="tab-content">
+            <h2>🚀 Transfer to Senior</h2>
+            
+            <table class="data-table" id="transferTable">
+                <thead>
+                    <tr>
+                        <th>Party Name</th>
+                        <th>Contact No</th>
+                        <th>District</th>
+                        <th>Loan Amount</th>
+                        <th>Interest Type</th>
+                        <th>Transfer Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transferTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <h2>📊 Reports & Analytics</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Report Type:</label>
+                    <select id="reportType">
+                        <option value="daily">Daily Report</option>
+                        <option value="weekly">Weekly Report</option>
+                        <option value="monthly">Monthly Report</option>
+                        <option value="disposition">Disposition Analysis</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date Range:</label>
+                    <input type="date" id="reportStartDate">
+                </div>
+                <div class="form-group">
+                    <label>To:</label>
+                    <input type="date" id="reportEndDate">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+                </div>
+            </div>
+
+            <div id="reportResult" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Add Call Modal -->
+    <div id="addCallModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('addCallModal')">&times;</span>
+            <h3>➕ Add New Call Entry</h3>
+            <form id="addCallForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Party Name *</label>
+                        <input type="text" id="partyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>District *</label>
+                        <input type="text" id="district" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Block</label>
+                        <input type="text" id="block">
+                    </div>
+                    <div class="form-group">
+                        <label>Designation</label>
+                        <input type="text" id="designation">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number *</label>
+                        <input type="tel" id="contactNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data Code</label>
+                        <input type="text" id="dataCode">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes/Remarks</label>
+                    <textarea id="remarks" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Status/Disposition *</label>
+                    <select id="status" required>
+                        <option value="">Select Status</option>
+                        <option value="Send To Reception">Send To Reception</option>
+                        <option value="No Need">No Need</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Follow Up Required">Follow Up Required</option>
+                        <option value="Interested Transfer To Senior">Interested Transfer To Senior</option>
+                        <option value="Need To Support">Need To Support</option>
+                        <option value="Jarurat Hone Par Call Karenge">Jarurat Hone Par Call Karenge</option>
+                        <option value="Call Did Not Connect">Call Did Not Connect</option>
+                        <option value="Not Working Area">Not Working Area</option>
+                    </select>
+                </div>
+                <div class="form-group" id="followUpDateGroup" style="display: none;">
+                    <label>Next Follow-up Date</label>
+                    <input type="date" id="followUpDate">
+                </div>
+                <div class="form-group" id="loanAmountGroup" style="display: none;">
+                    <label>Loan Amount Required</label>
+                    <input type="number" id="loanAmount">
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Save Call</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Inbound Call Modal -->
+    <div id="addInboundModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('addInboundModal')">&times;</span>
+            <h3>📲 Add Inbound/Missed Call</h3>
+            <form id="addInboundForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Contact Number *</label>
+                        <input type="tel" id="inboundContactNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Call Type *</label>
+                        <select id="callType" required>
+                            <option value="Missed Call">Missed Call</option>
+                            <option value="Incoming Call">Incoming Call</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Party Name</label>
+                        <input type="text" id="inboundPartyName">
+                    </div>
+                    <div class="form-group">
+                        <label>District</label>
+                        <input type="text" id="inboundDistrict">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes/Remarks</label>
+                    <textarea id="inboundRemarks" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Save</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Call Action Modal -->
+    <div id="callActionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('callActionModal')">&times;</span>
+            <h3>📞 Update Call Status</h3>
+            <form id="callActionForm">
+                <input type="hidden" id="actionRecordId">
+                <div class="form-group">
+                    <label>New Status *</label>
+                    <select id="actionStatus" required>
+                        <option value="">Select Status</option>
+                        <option value="Send To Reception">Send To Reception</option>
+                        <option value="No Need">No Need</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Follow Up Required">Follow Up Required</option>
+                        <option value="Interested Transfer To Senior">Interested Transfer To Senior</option>
+                        <option value="Need To Support">Need To Support</option>
+                        <option value="Jarurat Hone Par Call Karenge">Jarurat Hone Par Call Karenge</option>
+                        <option value="Call Did Not Connect">Call Did Not Connect</option>
+                        <option value="Not Working Area">Not Working Area</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Updated Remarks *</label>
+                    <textarea id="actionRemarks" rows="3" required></textarea>
+                </div>
+                <div class="form-group" id="actionFollowUpDateGroup" style="display: none;">
+                    <label>Next Follow-up Date</label>
+                    <input type="date" id="actionFollowUpDate">
+                </div>
+                <div class="form-group" id="actionLoanAmountGroup" style="display: none;">
+                    <label>Loan Amount Required</label>
+                    <input type="number" id="actionLoanAmount">
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Update</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let callingData = JSON.parse(localStorage.getItem('callingData') || '[]');
+        let inboundCalls = JSON.parse(localStorage.getItem('inboundCalls') || '[]');
+        let followUps = JSON.parse(localStorage.getItem('followUps') || '[]');
+        let transfers = JSON.parse(localStorage.getItem('transfers') || '[]');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCallingData();
+            updateStats();
+            setupEventListeners();
+            
+            // Set today's date as default for reports
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportStartDate').value = today;
+            document.getElementById('reportEndDate').value = today;
+        });
+
+        function setupEventListeners() {
+            // Status change handlers
+            document.getElementById('status').addEventListener('change', handleStatusChange);
+            document.getElementById('actionStatus').addEventListener('change', handleActionStatusChange);
+            
+            // Form submissions
+            document.getElementById('addCallForm').addEventListener('submit', handleAddCall);
+            document.getElementById('addInboundForm').addEventListener('submit', handleAddInbound);
+            document.getElementById('callActionForm').addEventListener('submit', handleCallAction);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for specific tabs
+            switch(tabName) {
+                case 'daily-calling':
+                    loadCallingData();
+                    break;
+                case 'inbound-calls':
+                    loadInboundCalls();
+                    break;
+                case 'follow-ups':
+                    loadFollowUps();
+                    break;
+                case 'transfers':
+                    loadTransfers();
+                    break;
+            }
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function handleStatusChange() {
+            const status = document.getElementById('status').value;
+            const followUpGroup = document.getElementById('followUpDateGroup');
+            const loanAmountGroup = document.getElementById('loanAmountGroup');
+            
+            if (status === 'Follow Up Required') {
+                followUpGroup.style.display = 'block';
+            } else {
+                followUpGroup.style.display = 'none';
+            }
+            
+            if (status === 'Interested Transfer To Senior') {
+                loanAmountGroup.style.display = 'block';
+            } else {
+                loanAmountGroup.style.display = 'none';
+            }
+        }
+
+        function handleActionStatusChange() {
+            const status = document.getElementById('actionStatus').value;
+            const followUpGroup = document.getElementById('actionFollowUpDateGroup');
+            const loanAmountGroup = document.getElementById('actionLoanAmountGroup');
+            
+            if (status === 'Follow Up Required') {
+                followUpGroup.style.display = 'block';
+            } else {
+                followUpGroup.style.display = 'none';
+            }
+            
+            if (status === 'Interested Transfer To Senior') {
+                loanAmountGroup.style.display = 'block';
+            } else {
+                loanAmountGroup.style.display = 'none';
+            }
+        }
+
+        function handleAddCall(e) {
+            e.preventDefault();
+            
+            const newCall = {
+                id: generateId(),
+                partyName: document.getElementById('partyName').value,
+                district: document.getElementById('district').value,
+                block: document.getElementById('block').value,
+                designation: document.getElementById('designation').value,
+                contactNo: document.getElementById('contactNo').value,
+                dataCode: document.getElementById('dataCode').value,
+                remarks: document.getElementById('remarks').value,
+                status: document.getElementById('status').value,
+                followUpDate: document.getElementById('followUpDate').value,
+                loanAmount: document.getElementById('loanAmount').value,
+                createdDate: new Date().toISOString(),
+                lastCalled: new Date().toISOString().split('T')[0]
+            };
+            
+            callingData.push(newCall);
+            localStorage.setItem('callingData', JSON.stringify(callingData));
+            
+            // Create follow-up if needed
+            if (newCall.status === 'Follow Up Required' && newCall.followUpDate) {
+                createFollowUp(newCall);
+            }
+            
+            // Create transfer if interested
+            if (newCall.status === 'Interested Transfer To Senior') {
+                createTransfer(newCall);
+            }
+            
+            loadCallingData();
+            updateStats();
+            hideModal('addCallModal');
+            document.getElementById('addCallForm').reset();
+            showNotification('Call record added successfully!', 'success');
+        }
+
+        function handleAddInbound(e) {
+            e.preventDefault();
+            
+            const contactNo = document.getElementById('inboundContactNo').value;
+            
+            // Check if number exists in calling data
+            const existingCall = callingData.find(call => call.contactNo === contactNo);
+            
+            const newInbound = {
+                id: generateId(),
+                contactNo: contactNo,
+                callType: document.getElementById('callType').value,
+                partyName: document.getElementById('inboundPartyName').value || (existingCall ? existingCall.partyName : ''),
+                district: document.getElementById('inboundDistrict').value || (existingCall ? existingCall.district : ''),
+                remarks: document.getElementById('inboundRemarks').value,
+                status: 'Pending',
+                callDateTime: new Date().toISOString(),
+                isProcessed: false
+            };
+            
+            inboundCalls.push(newInbound);
+            localStorage.setItem('inboundCalls', JSON.stringify(inboundCalls));
+            
+            loadInboundCalls();
+            updateStats();
+            hideModal('addInboundModal');
+            document.getElementById('addInboundForm').reset();
+            showNotification('Inbound call added successfully!', 'success');
+        }
+
+        function handleCallAction(e) {
+            e.preventDefault();
+            
+            const recordId = document.getElementById('actionRecordId').value;
+            const newStatus = document.getElementById('actionStatus').value;
+            const newRemarks = document.getElementById('actionRemarks').value;
+            const followUpDate = document.getElementById('actionFollowUpDate').value;
+            const loanAmount = document.getElementById('actionLoanAmount').value;
+            
+            // Find and update the record
+            const callIndex = callingData.findIndex(call => call.id === recordId);
+            if (callIndex !== -1) {
+                const currentDate = new Date().toISOString().split('T')[0];
+                callingData[callIndex].status = newStatus;
+                callingData[callIndex].remarks += ` // ${currentDate}: ${newRemarks}`;
+                callingData[callIndex].lastCalled = currentDate;
+                
+                if (followUpDate) {
+                    callingData[callIndex].followUpDate = followUpDate;
+                }
+                
+                if (loanAmount) {
+                    callingData[callIndex].loanAmount = loanAmount;
+                }
+                
+                // Create follow-up if needed
+                if (newStatus === 'Follow Up Required' && followUpDate) {
+                    createFollowUp(callingData[callIndex]);
+                }
+                
+                // Create transfer if interested
+                if (newStatus === 'Interested Transfer To Senior') {
+                    createTransfer(callingData[callIndex]);
+                }
+                
+                localStorage.setItem('callingData', JSON.stringify(callingData));
+                loadCallingData();
+                updateStats();
+                hideModal('callActionModal');
+                showNotification('Call status updated successfully!', 'success');
+            }
+        }
+
+        function createFollowUp(callRecord) {
+            const followUp = {
+                id: generateId(),
+                originalRecordId: callRecord.id,
+                followUpPlannedDate: callRecord.followUpDate,
+                partyName: callRecord.partyName,
+                contactNo: callRecord.contactNo,
+                district: callRecord.district,
+                previousRemark: callRecord.remarks,
+                latestStatus: 'Pending',
+                isCompleted: false,
+                createdDate: new Date().toISOString()
+            };
+            
+            followUps.push(followUp);
+            localStorage.setItem('followUps', JSON.stringify(followUps));
+        }
+
+        function createTransfer(callRecord) {
+            const transfer = {
+                id: generateId(),
+                originalRecordId: callRecord.id,
+                partyName: callRecord.partyName,
+                contactNo: callRecord.contactNo,
+                district: callRecord.district,
+                block: callRecord.block,
+                designation: callRecord.designation,
+                loanAmount: callRecord.loanAmount || '',
+                interestType: 'Field', // Default, can be updated
+                detailedRequirement: callRecord.remarks,
+                transferDate: new Date().toISOString(),
+                transferredBy: 'Current User', // Should be dynamic
+                seniorStatus: 'Pending',
+                processingStatus: 'New'
+            };
+            
+            transfers.push(transfer);
+            localStorage.setItem('transfers', JSON.stringify(transfers));
+        }
+
+        function loadCallingData() {
+            const tbody = document.getElementById('callsTableBody');
+            tbody.innerHTML = '';
+            
+            callingData.forEach(call => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${call.partyName}</td>
+                    <td>${call.district}</td>
+                    <td>${call.block || '-'}</td>
+                    <td>${call.designation || '-'}</td>
+                    <td>
+                        <a href="tel:${call.contactNo}" class="call-button">📞 ${call.contactNo}</a>
+                    </td>
+                    <td><span class="status-badge status-${call.status.toLowerCase().replace(/\s+/g, '-')}">${call.status}</span></td>
+                    <td>${call.lastCalled}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editCall('${call.id}')" style="padding: 5px 10px; font-size: 12px;">✏️ Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCall('${call.id}')" style="padding: 5px 10px; font-size: 12px;">🗑️ Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function loadInboundCalls() {
+            const tbody = document.getElementById('inboundTableBody');
+            tbody.innerHTML = '';
+            
+            inboundCalls.forEach(call => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>
+                        <a href="tel:${call.contactNo}" class="call-button">📞 ${call.contactNo}</a>
+                    </td>
+                    <td>${call.callType}</td>
+                    <td>${call.partyName || '-'}</td>
+                    <td>${call.district || '-'}</td>
+                    <td><span class="status-badge">${call.status}</span></td>
+                    <td>${new Date(call.callDateTime).toLocaleString()}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="processInboundCall('${call.id}')" style="padding: 5px 10px; font-size: 12px;">✅ Process</button>
+                        <button class="btn btn-danger" onclick="deleteInboundCall('${call.id}')" style="padding: 5px 10px; font-size: 12px;">🗑️ Delete</button>
+                    </td>
+                `;
+            });
+        }
+
+        function loadFollowUps() {
+            const tbody = document.getElementById('followUpTableBody');
+            tbody.innerHTML = '';
+            
+            followUps.forEach(followUp => {
+                const row = tbody.insertRow();
+                const isOverdue = new Date(followUp.followUpPlannedDate) < new Date();
+                const rowClass = isOverdue ? 'style="background-color: #ffebee;"' : '';
+                
+                row.innerHTML = `
+                    <td ${rowClass}>${followUp.partyName}</td>
+                    <td ${rowClass}>
+                        <a href="tel:${followUp.contactNo}" class="call-button">📞 ${followUp.contactNo}</a>
+                    </td>
+                    <td ${rowClass}>${followUp.district}</td>
+                    <td ${rowClass}>${followUp.followUpPlannedDate} ${isOverdue ? '⚠️' : ''}</td>
+                    <td ${rowClass}>${followUp.previousRemark.substring(0, 50)}...</td>
+                    <td ${rowClass}><span class="status-badge">${followUp.latestStatus}</span></td>
+                    <td ${rowClass}>
+                        <button class="btn btn-success" onclick="completeFollowUp('${followUp.id}')" style="padding: 5px 10px; font-size: 12px;">✅ Complete</button>
+                        <button class="btn btn-warning" onclick="rescheduleFollowUp('${followUp.id}')" style="padding: 5px 10px; font-size: 12px;">📅 Reschedule</button>
+                    </td>
+                `;
+            });
+        }
+
+        function loadTransfers() {
+            const tbody = document.getElementById('transferTableBody');
+            tbody.innerHTML = '';
+            
+            transfers.forEach(transfer => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${transfer.partyName}</td>
+                    <td>
+                        <a href="tel:${transfer.contactNo}" class="call-button">📞 ${transfer.contactNo}</a>
+                    </td>
+                    <td>${transfer.district}</td>
+                    <td>₹${transfer.loanAmount || '-'}</td>
+                    <td>${transfer.interestType}</td>
+                    <td>${new Date(transfer.transferDate).toLocaleDateString()}</td>
+                    <td><span class="status-badge">${transfer.processingStatus}</span></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="updateTransfer('${transfer.id}')" style="padding: 5px 10px; font-size: 12px;">📝 Update</button>
+                        <button class="btn btn-success" onclick="viewTransferDetails('${transfer.id}')" style="padding: 5px 10px; font-size: 12px;">👁️ View</button>
+                    </td>
+                `;
+            });
+        }
+
+        function loadTodayFollowUps() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayFollowUps = followUps.filter(f => f.followUpPlannedDate === today && !f.isCompleted);
+            showFilteredFollowUps(todayFollowUps);
+        }
+
+        function loadOverdueFollowUps() {
+            const today = new Date().toISOString().split('T')[0];
+            const overdueFollowUps = followUps.filter(f => f.followUpPlannedDate < today && !f.isCompleted);
+            showFilteredFollowUps(overdueFollowUps);
+        }
+
+        function loadAllFollowUps() {
+            loadFollowUps();
+        }
+
+        function showFilteredFollowUps(filteredFollowUps) {
+            const tbody = document.getElementById('followUpTableBody');
+            tbody.innerHTML = '';
+            
+            filteredFollowUps.forEach(followUp => {
+                const row = tbody.insertRow();
+                const isOverdue = new Date(followUp.followUpPlannedDate) < new Date();
+                const rowClass = isOverdue ? 'style="background-color: #ffebee;"' : '';
+                
+                row.innerHTML = `
+                    <td ${rowClass}>${followUp.partyName}</td>
+                    <td ${rowClass}>
+                        <a href="tel:${followUp.contactNo}" class="call-button">📞 ${followUp.contactNo}</a>
+                    </td>
+                    <td ${rowClass}>${followUp.district}</td>
+                    <td ${rowClass}>${followUp.followUpPlannedDate} ${isOverdue ? '⚠️' : ''}</td>
+                    <td ${rowClass}>${followUp.previousRemark.substring(0, 50)}...</td>
+                    <td ${rowClass}><span class="status-badge">${followUp.latestStatus}</span></td>
+                    <td ${rowClass}>
+                        <button class="btn btn-success" onclick="completeFollowUp('${followUp.id}')" style="padding: 5px 10px; font-size: 12px;">✅ Complete</button>
+                        <button class="btn btn-warning" onclick="rescheduleFollowUp('${followUp.id}')" style="padding: 5px 10px; font-size: 12px;">📅 Reschedule</button>
+                    </td>
+                `;
+            });
+        }
+
+        function searchCalls() {
+            const searchTerm = document.getElementById('searchCalls').value.toLowerCase();
+            const rows = document.getElementById('callsTableBody').getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        function filterCalls() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.getElementById('callsTableBody').getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const statusCell = row.getElementsByTagName('td')[5];
+                
+                if (!statusFilter || statusCell.textContent.includes(statusFilter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        function editCall(callId) {
+            const call = callingData.find(c => c.id === callId);
+            if (call) {
+                document.getElementById('actionRecordId').value = callId;
+                document.getElementById('actionRemarks').value = '';
+                showModal('callActionModal');
+            }
+        }
+
+        function deleteCall(callId) {
+            if (confirm('Are you sure you want to delete this call record?')) {
+                callingData = callingData.filter(c => c.id !== callId);
+                localStorage.setItem('callingData', JSON.stringify(callingData));
+                loadCallingData();
+                updateStats();
+                showNotification('Call record deleted successfully!', 'success');
+            }
+        }
+
+        function processInboundCall(callId) {
+            const inboundCall = inboundCalls.find(c => c.id === callId);
+            if (inboundCall) {
+                // Move to main calling data
+                const newCall = {
+                    id: generateId(),
+                    partyName: inboundCall.partyName || 'Unknown',
+                    district: inboundCall.district || 'Unknown',
+                    block: '',
+                    designation: '',
+                    contactNo: inboundCall.contactNo,
+                    dataCode: '',
+                    remarks: `Inbound call processed: ${inboundCall.remarks}`,
+                    status: 'Call Did Not Connect', // Default status
+                    createdDate: new Date().toISOString(),
+                    lastCalled: new Date().toISOString().split('T')[0]
+                };
+                
+                callingData.push(newCall);
+                localStorage.setItem('callingData', JSON.stringify(callingData));
+                
+                // Remove from inbound calls
+                inboundCalls = inboundCalls.filter(c => c.id !== callId);
+                localStorage.setItem('inboundCalls', JSON.stringify(inboundCalls));
+                
+                loadInboundCalls();
+                updateStats();
+                showNotification('Inbound call processed and moved to calling data!', 'success');
+            }
+        }
+
+        function deleteInboundCall(callId) {
+            if (confirm('Are you sure you want to delete this inbound call?')) {
+                inboundCalls = inboundCalls.filter(c => c.id !== callId);
+                localStorage.setItem('inboundCalls', JSON.stringify(inboundCalls));
+                loadInboundCalls();
+                updateStats();
+                showNotification('Inbound call deleted!', 'success');
+            }
+        }
+
+        function completeFollowUp(followUpId) {
+            const followUp = followUps.find(f => f.id === followUpId);
+            if (followUp) {
+                const newStatus = prompt('Enter new status for this follow-up:');
+                const newRemarks = prompt('Enter follow-up remarks:');
+                
+                if (newStatus && newRemarks) {
+                    followUp.latestStatus = newStatus;
+                    followUp.latestNotesRemark = newRemarks;
+                    followUp.isCompleted = true;
+                    followUp.completedDate = new Date().toISOString();
+                    
+                    // Update original record
+                    const originalCall = callingData.find(c => c.id === followUp.originalRecordId);
+                    if (originalCall) {
+                        originalCall.status = newStatus;
+                        originalCall.remarks += ` // Follow-up completed: ${newRemarks}`;
+                        originalCall.lastCalled = new Date().toISOString().split('T')[0];
+                        localStorage.setItem('callingData', JSON.stringify(callingData));
+                    }
+                    
+                    localStorage.setItem('followUps', JSON.stringify(followUps));
+                    loadFollowUps();
+                    updateStats();
+                    showNotification('Follow-up completed successfully!', 'success');
+                }
+            }
+        }
+
+        function rescheduleFollowUp(followUpId) {
+            const followUp = followUps.find(f => f.id === followUpId);
+            if (followUp) {
+                const newDate = prompt('Enter new follow-up date (YYYY-MM-DD):');
+                if (newDate && new Date(newDate).getTime()) {
+                    followUp.followUpPlannedDate = newDate;
+                    localStorage.setItem('followUps', JSON.stringify(followUps));
+                    loadFollowUps();
+                    showNotification('Follow-up rescheduled successfully!', 'success');
+                }
+            }
+        }
+
+        function updateTransfer(transferId) {
+            const transfer = transfers.find(t => t.id === transferId);
+            if (transfer) {
+                const newStatus = prompt('Update processing status:', transfer.processingStatus);
+                const seniorRemarks = prompt('Senior remarks:');
+                
+                if (newStatus) {
+                    transfer.processingStatus = newStatus;
+                    if (seniorRemarks) {
+                        transfer.seniorRemarks = seniorRemarks;
+                    }
+                    localStorage.setItem('transfers', JSON.stringify(transfers));
+                    loadTransfers();
+                    showNotification('Transfer updated successfully!', 'success');
+                }
+            }
+        }
+
+        function viewTransferDetails(transferId) {
+            const transfer = transfers.find(t => t.id === transferId);
+            if (transfer) {
+                alert(`Transfer Details:
+                
+Party Name: ${transfer.partyName}
+Contact: ${transfer.contactNo}
+District: ${transfer.district}
+Block: ${transfer.block}
+Designation: ${transfer.designation}
+Loan Amount: ₹${transfer.loanAmount}
+Interest Type: ${transfer.interestType}
+Transfer Date: ${new Date(transfer.transferDate).toLocaleString()}
+Transferred By: ${transfer.transferredBy}
+Processing Status: ${transfer.processingStatus}
+Requirements: ${transfer.detailedRequirement}
+Senior Remarks: ${transfer.seniorRemarks || 'None'}`);
+            }
+        }
+
+        function refreshMissedCalls() {
+            // Simulate refreshing missed calls
+            showNotification('Missed calls refreshed!', 'info');
+            loadInboundCalls();
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,.csv';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            if (Array.isArray(importedData)) {
+                                callingData = [...callingData, ...importedData];
+                                localStorage.setItem('callingData', JSON.stringify(callingData));
+                                loadCallingData();
+                                updateStats();
+                                showNotification('Data imported successfully!', 'success');
+                            }
+                        } catch (error) {
+                            showNotification('Error importing data. Please check file format.', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function exportData() {
+            const dataToExport = {
+                callingData: callingData,
+                inboundCalls: inboundCalls,
+                followUps: followUps,
+                transfers: transfers,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `crm_data_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported successfully!', 'success');
+        }
+
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            
+            let reportHtml = '<div class="report-container">';
+            
+            switch(reportType) {
+                case 'daily':
+                    reportHtml += generateDailyReport(startDate);
+                    break;
+                case 'weekly':
+                    reportHtml += generateWeeklyReport(startDate, endDate);
+                    break;
+                case 'monthly':
+                    reportHtml += generateMonthlyReport(startDate, endDate);
+                    break;
+                case 'disposition':
+                    reportHtml += generateDispositionAnalysis();
+                    break;
+            }
+            
+            reportHtml += '</div>';
+            document.getElementById('reportResult').innerHTML = reportHtml;
+        }
+
+        function generateDailyReport(date) {
+            const dayData = callingData.filter(call => call.lastCalled === date);
+            const statusCounts = {};
+            
+            dayData.forEach(call => {
+                statusCounts[call.status] = (statusCounts[call.status] || 0) + 1;
+            });
+            
+            let html = `<h3>📊 Daily Report - ${date}</h3>`;
+            html += `<p><strong>Total Calls:</strong> ${dayData.length}</p>`;
+            html += `<h4>Status Breakdown:</h4><ul>`;
+            
+            for (const [status, count] of Object.entries(statusCounts)) {
+                html += `<li>${status}: ${count}</li>`;
+            }
+            
+            html += '</ul>';
+            return html;
+        }
+
+        function generateWeeklyReport(startDate, endDate) {
+            const weekData = callingData.filter(call => 
+                call.lastCalled >= startDate && call.lastCalled <= endDate
+            );
+            
+            let html = `<h3>📊 Weekly Report - ${startDate} to ${endDate}</h3>`;
+            html += `<p><strong>Total Calls:</strong> ${weekData.length}</p>`;
+            html += `<p><strong>Follow-ups Created:</strong> ${followUps.length}</p>`;
+            html += `<p><strong>Transfers to Senior:</strong> ${transfers.length}</p>`;
+            
+            return html;
+        }
+
+        function generateMonthlyReport(startDate, endDate) {
+            const monthData = callingData.filter(call => 
+                call.lastCalled >= startDate && call.lastCalled <= endDate
+            );
+            
+            let html = `<h3>📊 Monthly Report - ${startDate} to ${endDate}</h3>`;
+            html += `<p><strong>Total Calls:</strong> ${monthData.length}</p>`;
+            html += `<p><strong>Conversion Rate:</strong> ${((transfers.length / monthData.length) * 100).toFixed(2)}%</p>`;
+            
+            return html;
+        }
+
+        function generateDispositionAnalysis() {
+            const dispositionCounts = {};
+            
+            callingData.forEach(call => {
+                dispositionCounts[call.status] = (dispositionCounts[call.status] || 0) + 1;
+            });
+            
+            let html = `<h3>📊 Disposition Analysis</h3>`;
+            html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">`;
+            
+            for (const [disposition, count] of Object.entries(dispositionCounts)) {
+                const percentage = ((count / callingData.length) * 100).toFixed(1);
+                html += `<div class="stat-card">
+                    <h4>${count}</h4>
+                    <p>${disposition}</p>
+                    <small>${percentage}%</small>
+                </div>`;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            const todaysCalls = callingData.filter(call => call.lastCalled === today).length;
+            const pendingFollowUps = followUps.filter(f => !f.isCompleted).length;
+            const interestedCases = callingData.filter(call => call.status === 'Interested Transfer To Senior').length;
+            const missedCallsCount = inboundCalls.filter(call => !call.isProcessed).length;
+            
+            document.getElementById('totalCalls').textContent = todaysCalls;
+            document.getElementById('followUps').textContent = pendingFollowUps;
+            document.getElementById('interested').textContent = interestedCases;
+            document.getElementById('missedCalls').textContent = missedCallsCount;
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Sample data for testing (remove in production)
+        function loadSampleData() {
+            if (callingData.length === 0) {
+                const sampleData = [
+                    {
+                        id: generateId(),
+                        partyName: "राम कुमार शर्मा",
+                        district: "आगरा",
+                        block: "बाह",
+                        designation: "प्राथमिक शिक्षक",
+                        contactNo: "9876543210",
+                        dataCode: "AGR001",
+                        remarks: "शिक्षक ने लोन की जरूरत बताई",
+                        status: "Follow Up Required",
+                        followUpDate: "2025-09-05",
+                        createdDate: new Date().toISOString(),
+                        lastCalled: new Date().toISOString().split('T')[0]
+                    },
+                    {
+                        id: generateId(),
+                        partyName: "सुनीता देवी",
+                        district: "मथुरा",
+                        block: "मथुरा",
+                        designation: "सहायक शिक्षक",
+                        contactNo: "8765432109",
+                        dataCode: "MTR002",
+                        remarks: "फिलहाल जरूरत नहीं है",
+                        status: "No Need",
+                        createdDate: new Date().toISOString(),
+                        lastCalled: new Date().toISOString().split('T')[0]
+                    }
+                ];
+                
+                callingData = sampleData;
+                localStorage.setItem('callingData', JSON.stringify(callingData));
+            }
+        }
+
+        // Load sample data on first visit
+        loadSampleData();
+    </script>
+</body>
+</html>
